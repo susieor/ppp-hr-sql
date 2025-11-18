@@ -7,6 +7,10 @@
 - **date_hired**: Date employee was hired (string format).
 - **employment_status**: Current status (Active, Inactive).
 - **termination_date**: Date of termination (if applicable).
+- **salary_band***: Categorised salary range to group employees into pay bands.
+- **exit_reason**: Reason for an employee leaving, such as resignation, retirement, dismissal or contract end.
+- **exit_reason_notes**: Additional notes or comments explaining the context behind the exit reason.
+- **tenure_years**: Total length of service calculated from date_hired to either the termination date or the current date.
 
 ### performance
 - **employee_id**: Foreign Key → employees.
@@ -19,6 +23,7 @@
 - **engagement_score**: Overall engagement.
 - **career_growth_score**: Career progression score.
 - **team_support_score**: Team support/culture score.
+- **net_promoter_score**: Measure of employee loyalty and likelihood to recommend the organisation, typically scored from 0 to 10.
 
 ### training
 - **employee_id**: Foreign Key → employees.
