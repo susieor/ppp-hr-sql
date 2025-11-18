@@ -1,13 +1,14 @@
-USE hr_data;
+-- Optional: select the database (comment out if not needed)
+-- USE hr_data;
 
-## Count of Employees by Employment Status
+-- Count of Employees by Employment Status
 SELECT 
     employment_status,
     COUNT(DISTINCT employee_id) AS total_employees
 FROM employees
 GROUP BY employment_status;
 
-## Top/Bottom 5 Employees by Engagement Score & Years at the Company
+-- Top/Bottom 5 Employees by Engagement Score & Years at the Company (full ordered list)
 SELECT 
     e.employee_id,
     TIMESTAMPDIFF(YEAR, STR_TO_DATE(e.date_hired, '%d/%m/%Y'), CURDATE()) AS years_at_company, 
@@ -16,6 +17,7 @@ FROM employees e
 JOIN surveys s ON e.employee_id = s.employee_id
 ORDER BY s.engagement_score DESC;
 
+-- Top and Bottom 5 Employees by Engagement Score (CTE with ranking)
 WITH ranked_engagement AS (
     SELECT 
         e.employee_id,
@@ -27,22 +29,34 @@ WITH ranked_engagement AS (
     FROM employees e
     JOIN surveys s ON e.employee_id = s.employee_id
 )
-SELECT employee_id, department, years_at_company, engagement_score, 'Top 5' AS group_label
+SELECT 
+    employee_id, 
+    department, 
+    years_at_company, 
+    engagement_score, 
+    'Top 5' AS group_label
 FROM ranked_engagement
 WHERE rank_desc <= 5
+
 UNION ALL
-SELECT employee_id, department, years_at_company, engagement_score, 'Bottom 5' AS group_label
+
+SELECT 
+    employee_id, 
+    department, 
+    years_at_company, 
+    engagement_score, 
+    'Bottom 5' AS group_label
 FROM ranked_engagement
 WHERE rank_asc <= 5;
 
-## Department Summary: Avg Training, Performance, and Engagement
+-- Department Summary: Avg Training, Performance, and Engagement
 SELECT 
     e.department,
     e.employment_status,
     COUNT(DISTINCT e.employee_id) AS total_employees,
-    ROUND(AVG(t.training_hours), 2) AS avg_training_hours,
+    ROUND(AVG(t.training_hours), 2)    AS avg_training_hours,
     ROUND(AVG(p.performance_rating), 2) AS avg_performance_rating,
-    ROUND(AVG(s.engagement_score), 2) AS avg_engagement
+    ROUND(AVG(s.engagement_score), 2)  AS avg_engagement
 FROM employees e
 LEFT JOIN training   t ON e.employee_id = t.employee_id
 LEFT JOIN performance p ON e.employee_id = p.employee_id
@@ -51,7 +65,7 @@ WHERE e.employment_status <> 'Inactive'
 GROUP BY e.department, e.employment_status
 ORDER BY avg_training_hours DESC;
 
-## Count of Employees by Years at the Company
+-- Count of Employees by Years at the Company
 SELECT 
     TIMESTAMPDIFF(YEAR, STR_TO_DATE(date_hired, '%d/%m/%Y'), CURDATE()) AS years_at_company,
     COUNT(*) AS num_employees
@@ -60,7 +74,7 @@ WHERE employment_status = 'Active'
 GROUP BY years_at_company
 ORDER BY years_at_company;
 
-## Employees with ≤2 and >2 Trainings by Department
+-- Employees with ≤2 and >2 Trainings by Department
 SELECT 
     e.department,
     COUNT(DISTINCT CASE WHEN t.training_count > 2 THEN e.employee_id END) AS employees_with_more_than_2_trainings,
@@ -73,7 +87,7 @@ LEFT JOIN (
 ) t ON e.employee_id = t.employee_id
 GROUP BY e.department;
 
-## Training Hours vs Performance: Highest Trained
+-- Training Hours vs Performance: Highest Trained
 SELECT 
     e.employee_id,
     ROUND(SUM(t.training_hours), 0) AS total_training,
@@ -85,7 +99,7 @@ GROUP BY e.employee_id
 ORDER BY total_training DESC
 LIMIT 10;
 
-## Training Hours vs Performance: Lowest Trained
+-- Training Hours vs Performance: Lowest Trained
 SELECT 
     e.employee_id,
     ROUND(SUM(t.training_hours), 0) AS total_training,
@@ -97,7 +111,7 @@ GROUP BY e.employee_id
 ORDER BY total_training ASC
 LIMIT 10;
 
-## Engagement & Team Culture Scores by Department
+-- Engagement & Team Culture Scores by Department
 SELECT 
     e.department,
     ROUND(AVG(s.engagement_score), 1)    AS avg_engagement,
@@ -108,7 +122,7 @@ JOIN surveys s ON e.employee_id = s.employee_id
 GROUP BY e.department
 ORDER BY avg_support ASC;
 
-## List of Active and Inactive Employees by Hire Year
+-- List of Active and Inactive Employees by Hire Year
 SELECT 
     employment_status,
     YEAR(STR_TO_DATE(date_hired, '%d/%m/%Y')) AS hire_year,
@@ -117,7 +131,7 @@ FROM employees
 GROUP BY employment_status, hire_year
 ORDER BY hire_year, employment_status;
 
-## Cost of training vs performance
+-- Cost of training vs performance
 SELECT 
     e.department,
     ROUND(SUM(t.training_cost), 2) AS total_training_spend,
@@ -128,16 +142,56 @@ JOIN performance p ON e.employee_id = p.employee_id
 GROUP BY e.department
 ORDER BY total_training_spend DESC;
 
-## Cross-tab training by department status
+-- Cross-tab training by department and employment status
 SELECT 
     department,
     employment_status,
-    SUM(training_hours) AS total_training_hours,
-    AVG(performance_rating) AS avg_performance
+    SUM(training_hours)      AS total_training_hours,
+    AVG(performance_rating)  AS avg_performance
 FROM employees e
-LEFT JOIN training t ON e.employee_id = t.employee_id
+LEFT JOIN training t   ON e.employee_id = t.employee_id
 LEFT JOIN performance p ON e.employee_id = p.employee_id
 GROUP BY department, employment_status;
+
+-- People who have no training
+SELECT 
+    e.employee_id,
+    e.department,
+    e.role,
+    e.date_hired,
+    e.employment_status
+FROM employees e
+LEFT JOIN training t 
+    ON e.employee_id = t.employee_id
+WHERE t.employee_id IS NULL;
+
+-- Comparison: employees with vs without training
+SELECT
+    COUNT(DISTINCT CASE WHEN t.employee_id IS NOT NULL THEN e.employee_id END) AS has_training,
+    COUNT(DISTINCT CASE WHEN t.employee_id IS NULL THEN e.employee_id END)      AS no_training
+FROM employees e
+LEFT JOIN training t 
+    ON e.employee_id = t.employee_id;
+
+-- Measures by Training Status
+SELECT 
+    CASE 
+        WHEN t.employee_id IS NULL THEN 'No Training'
+        ELSE 'Has Training'
+    END AS training_status,
+    ROUND(AVG(p.performance_rating), 2)    AS avg_performance_rating,
+    ROUND(AVG(s.engagement_score), 2)      AS avg_engagement_score,
+    ROUND(AVG(s.net_promoter_score), 2)    AS avg_net_promoter_score,
+    ROUND(AVG(s.wellbeing_score), 2)       AS avg_wellbeing_score,
+    COUNT(DISTINCT e.employee_id)          AS employee_count
+FROM employees e
+LEFT JOIN training t 
+    ON e.employee_id = t.employee_id
+LEFT JOIN performance p 
+    ON e.employee_id = p.employee_id
+LEFT JOIN surveys s 
+    ON e.employee_id = s.employee_id
+GROUP BY training_status;
 
 -- Final sanity check
 SELECT COUNT(*) FROM employees;
