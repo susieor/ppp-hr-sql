@@ -1,15 +1,15 @@
-PPP HR SQL (Appendix)
+## PPP HR SQL (Appendix)
 
 This repository contains the SQL and Python scripts used in my Professional Practice Project.
 No company data is included. Only table structures, cleaning logic, enrichment steps, analysis queries and Power BI Python scripts.
 
-Project Overview
+## Project Overview
 
 This appendix supports the HR data analysis completed for the project.
 The scripts here replicate the database schema, data enrichment workflow and analytical queries used to produce the Power BI dashboard and report findings.
 All processes are fully reproducible and contain no confidential information.
 
-Files
+## Files
 SQL
 
 sql/01_schema.sql
@@ -41,7 +41,7 @@ T-test and boxplot comparing performance between Active and Inactive employees.
 
 Each script mirrors the visual analysis implemented inside Power BI Python visuals.
 
-Usage
+## Usage
 
 Open MySQL Workbench or your SQL environment.
 
@@ -53,8 +53,8 @@ Run any queries from sql/03_analysis.sql to reproduce the analytical outputs.
 
 Python scripts can be run inside Power BI or a Python environment using the dataset exported from SQL.
 
-Notes for Reviewers
+## Notes for Reviewers
 
 This repository contains only the SQL and Python logic used for the analysis.
 All scripts are structured to run independently, and the enrichment steps in 02_data_enrichment.sql match those described in the methodology section of the written report.
-The queries in 03_analysis.sql and the Python scripts reflect the metrics and visuals presented in the final dashboard.
+The queries in 03_analysis.sql and the Python scripts reflect the metrics and visuals presented in the appendices for the dashboard.
