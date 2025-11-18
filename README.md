@@ -1,39 +1,60 @@
-# PPP HR SQL (Appendix)
+PPP HR SQL (Appendix)
 
-This repository contains the SQL scripts used in my Professional Practice Project.  
-No company data is included. Only table structures, staging logic, enrichment steps and read-only analysis queries.
+This repository contains the SQL and Python scripts used in my Professional Practice Project.
+No company data is included. Only table structures, cleaning logic, enrichment steps, analysis queries and Power BI Python scripts.
 
-## Project Overview
+Project Overview
 
-This SQL appendix supports the analysis completed for my Professional Practice Project.  
-The scripts included here replicate the database structure, cleaning steps, enrichment logic and analytical queries used to develop the HR dashboard and statistical findings.  
-All data operations are fully reproducible and contain no confidential company information.
+This appendix supports the HR data analysis completed for the project.
+The scripts here replicate the database schema, data enrichment workflow and analytical queries used to produce the Power BI dashboard and report findings.
+All processes are fully reproducible and contain no confidential information.
 
+Files
+SQL
 
-## Files
+sql/01_schema.sql
+Creates the hr_data database and all core tables used in the project.
 
-**`sql/01_schema.sql`**  
-Creates the `hr_data` database and all base tables used in the project.
+sql/02_data_enrichment.sql
+Includes staging table creation, data cleaning and enrichment steps for:
+salary bands, tenure, exit information, wellbeing scores and net promoter scores.
 
-**`sql/02_data_enrichment.sql`**  
-SQL script showing how additional fields (salary band, tenure, exit information, wellbeing scores and net promoter scores) were added, validated and cleaned using staging tables.
+sql/03_analysis.sql
+Contains all analysis queries used to generate descriptive statistics, departmental summaries, training insights and engagement metrics.
 
-**`sql/03_analysis.sql`**  
-Full set of analysis queries used to generate descriptive statistics, department-level summaries, training comparisons and engagement insights.
+sql/data_dictionary.md
+Defines every field across all tables in the database.
 
-**`sql/data_dictionary.md`**  
-Data dictionary outlining all fields across the tables in the database.
+Python
 
-## Usage
+python/01_perf_by_completion_year.py
+Line chart of average performance rating by training completion year.
 
-1. Open MySQL Workbench or your SQL environment.  
-2. Run `sql/01_schema.sql` to create the database structure.  
-3. Run `sql/02_data_enrichment.sql` to apply the cleaning and enrichment steps described in the report.  
-4. Run queries from `sql/03_analysis.sql` to reproduce the analytical outputs.
+python/02_training_high_vs_low_ttest.py
+T-test and boxplot comparing performance for high vs low training hours.
 
-## Notes for Reviewers
+python/03_training_vs_performance_regression.py
+Linear regression and correlation analysis between training hours and performance.
 
-This repository contains only the SQL components of the project.  
-All scripts are structured so they can be run independently, and the enrichment steps in `02_data_enrichment.sql` mirror those described in the methodology section of the written report.  
-The queries in `03_analysis.sql` correspond directly to the findings and Power BI dashboard visuals presented in the final submission.
+python/04_perf_by_employment_status_ttest.py
+T-test and boxplot comparing performance between Active and Inactive employees.
 
+Each script mirrors the visual analysis implemented inside Power BI Python visuals.
+
+Usage
+
+Open MySQL Workbench or your SQL environment.
+
+Run sql/01_schema.sql to create the full database structure.
+
+Run sql/02_data_enrichment.sql to apply cleaning and enrichment steps.
+
+Run any queries from sql/03_analysis.sql to reproduce the analytical outputs.
+
+Python scripts can be run inside Power BI or a Python environment using the dataset exported from SQL.
+
+Notes for Reviewers
+
+This repository contains only the SQL and Python logic used for the analysis.
+All scripts are structured to run independently, and the enrichment steps in 02_data_enrichment.sql match those described in the methodology section of the written report.
+The queries in 03_analysis.sql and the Python scripts reflect the metrics and visuals presented in the final dashboard.
